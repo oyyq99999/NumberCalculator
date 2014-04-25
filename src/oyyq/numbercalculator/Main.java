@@ -9,6 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         // TODO Auto-generated method stub
+        // System.err.close();
         // int odd;
         // int even;
         // int max = -1;
@@ -41,13 +42,13 @@ public class Main {
         // }
         // System.out.println(max);
         // System.exit(0);
-        NumberCalculator calculator = new NumberCalculator(new Number[] {1, 5, 5, 7, 13}, 24);
+        NumberCalculator calculator = new NumberCalculator(
+                new Number[] {1, 1, 1, 1, 1, 1, 1, 1, 1}, 24);
         Number[] numbers = calculator.getNumbers();
         for (Number number : numbers) {
             System.out.print(number + " ");
         }
         System.out.println();
-        // System.err.close();
         long start = System.currentTimeMillis();
         System.out.println(calculator.calculate(true));
         System.err.println(System.currentTimeMillis() - start);

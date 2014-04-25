@@ -2,6 +2,7 @@ package oyyq.numbercalculator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import oyyq.numbercalculator.datastructure.Expression;
 import oyyq.numbercalculator.datastructure.Operator;
@@ -12,6 +13,7 @@ public class NumberCalculator {
     private Number[]              numbers;
     private ArrayList<Expression> results;
     private Number                target;
+    HashMap<String, Boolean>      failedNumbers;
 
     public NumberCalculator(Number[] numbers) {
         this(numbers, 24);
@@ -39,9 +41,12 @@ public class NumberCalculator {
     }
 
     public boolean calculate(boolean findAll) {
+        failedNumbers = new HashMap<>();
         // the list is sorted
         ArrayList<Expression> expressions = getExpressions();
-        return search(expressions, findAll);
+        boolean result = search(expressions, findAll);
+        // System.err.println(searchCount);
+        return result;
     }
 
     public Number[] getNumbers() {
@@ -97,6 +102,10 @@ public class NumberCalculator {
     }
 
     private boolean search(ArrayList<Expression> expressions, boolean findAll) {
+        // if the combination of the numbers has been proved to fail, don't try it again!
+        if (expressions == null || failedNumbers.get(getHashKey(expressions)) != null) {
+            return false;
+        }
         boolean found = false;
         int size = expressions.size();
         if (size == 1) {
@@ -135,6 +144,8 @@ public class NumberCalculator {
                                 if (!findAll) {
                                     return found;
                                 }
+                            } else {
+                                failedNumbers.put(getHashKey(expressions), true);
                             }
                             expressions.remove(result);
                             break;
@@ -148,6 +159,8 @@ public class NumberCalculator {
                                 if (!findAll) {
                                     return found;
                                 }
+                            } else {
+                                failedNumbers.put(getHashKey(expressions), true);
                             }
                             expressions.remove(result);
                             break;
@@ -161,6 +174,8 @@ public class NumberCalculator {
                                 if (!findAll) {
                                     return found;
                                 }
+                            } else {
+                                failedNumbers.put(getHashKey(expressions), true);
                             }
                             expressions.remove(result);
                             break;
@@ -174,6 +189,8 @@ public class NumberCalculator {
                                     if (!findAll) {
                                         return found;
                                     }
+                                } else {
+                                    failedNumbers.put(getHashKey(expressions), true);
                                 }
                                 expressions.remove(result);
                             }
@@ -187,6 +204,8 @@ public class NumberCalculator {
                                     if (!findAll) {
                                         return found;
                                     }
+                                } else {
+                                    failedNumbers.put(getHashKey(expressions), true);
                                 }
                                 expressions.remove(result);
                             }
@@ -200,6 +219,17 @@ public class NumberCalculator {
             }
         }
         return found;
+    }
+
+    private String getHashKey(ArrayList<Expression> expressions) {
+        if (expressions != null) {
+            StringBuilder sb = new StringBuilder();
+            for (Expression expression : expressions) {
+                sb.append(expression.getValue().toString()).append(",");
+            }
+            return sb.toString();
+        }
+        return null;
     }
 
 }
