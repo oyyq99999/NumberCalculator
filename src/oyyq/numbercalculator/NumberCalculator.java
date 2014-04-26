@@ -117,14 +117,13 @@ public class NumberCalculator {
             return false;
         }
         for (int i = 0; i < size; i++) {
-            // no need to try another same number
-            if (i > 0 && expressions.get(i).getValue().equals(expressions.get(i - 1).getValue())) {
+            // no need to try another same expression
+            if (i > 0 && expressions.get(i).isSameAs(expressions.get(i - 1))) {
                 continue;
             }
             for (int j = i + 1; j < size; j++) {
-                // no need to try another same number
-                if (j > i + 1
-                        && expressions.get(j).getValue().equals(expressions.get(j - 1).getValue())) {
+                // no need to try another same expression
+                if (j > i + 1 && expressions.get(j).isSameAs(expressions.get(j - 1))) {
                     continue;
                 }
                 Expression operand1 = expressions.get(i);

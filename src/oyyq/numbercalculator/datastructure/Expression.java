@@ -79,6 +79,22 @@ public class Expression {
         return value;
     }
 
+    public boolean isSameAs(Expression other) {
+        if (other == null) {
+            return false;
+        }
+        if (simple && other.simple && value.compareTo(other.value) == 0) {
+            return true;
+        }
+        if (!simple && !other.simple) {
+            if (operator == other.operator && operand1.isSameAs(other.operand1)
+                    && operand2.isSameAs(other.operand2)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isSimple() {
         return simple;
     }
