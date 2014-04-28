@@ -110,7 +110,7 @@ public class Expression {
         final String CLOSE_PARENTHESIS = ")";
 
         StringBuilder sb = new StringBuilder();
-        if (operator != null) {
+        if (!simple) {
             // we have to use parantheses to guarantee the lower operators
             // calculates first
             // (a + b) * c
@@ -136,7 +136,7 @@ public class Expression {
                 sb.append(operand2.toString(fullParenthesis));
             }
         } else {
-            if (value.getDenominator().intValue() == 1) {
+            if (value.getDenominator().intValue() == 1 && value.compareTo(0) >= 0) {
                 sb.append(value.getNumerator());
             } else {
                 sb.append(OPEN_PARENTHESIS).append(value.toString()).append(CLOSE_PARENTHESIS);

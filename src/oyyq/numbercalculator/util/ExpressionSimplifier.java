@@ -32,7 +32,7 @@ public class ExpressionSimplifier {
                 result = simplified;
             }
 
-            simplified = simplifyDivideOne(result);
+            simplified = simplifyDivideAbsoluteOne(result);
             if (!simplified.toString(true).equals(result.toString(true))) {
                 hasSimplified = true;
                 result = simplified;
@@ -236,13 +236,13 @@ public class ExpressionSimplifier {
         return newExpression;
     }
 
-    private static Expression simplifyDivideOne(Expression oldExpression) {
+    private static Expression simplifyDivideAbsoluteOne(Expression oldExpression) {
         Expression newExpression = oldExpression;
         if (oldExpression.isSimple()) {
             return oldExpression;
         }
         if (oldExpression.getOperator() == Operator.DIVIDE
-                && oldExpression.getOperand2().getValue().equalsNumber(1)) {
+                && oldExpression.getOperand2().getValue().abs().equalsNumber(1)) {
             newExpression = new Expression(oldExpression.getOperand1(), Operator.MULTIPLY,
                     oldExpression.getOperand2());
         }
@@ -250,8 +250,8 @@ public class ExpressionSimplifier {
         Expression operand2 = newExpression.getOperand2();
         Operator operator = newExpression.getOperator();
         if (!operand1.isSimple() || !operand2.isSimple()) {
-            operand1 = simplifyDivideOne(operand1);
-            operand2 = simplifyDivideOne(operand2);
+            operand1 = simplifyDivideAbsoluteOne(operand1);
+            operand2 = simplifyDivideAbsoluteOne(operand2);
             newExpression = new Expression(operand1, operator, operand2);
         }
         return newExpression;

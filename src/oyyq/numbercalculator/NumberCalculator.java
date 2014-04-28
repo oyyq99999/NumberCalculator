@@ -10,10 +10,10 @@ import oyyq.numbercalculator.util.ExpressionSimplifier;
 
 public class NumberCalculator {
 
+    HashMap<String, Boolean>      failedNumbers;
     private Number[]              numbers;
     private ArrayList<Expression> results;
     private Number                target;
-    HashMap<String, Boolean>      failedNumbers;
 
     public NumberCalculator(Number[] numbers) {
         this(numbers, 24);
@@ -45,7 +45,6 @@ public class NumberCalculator {
         // the list is sorted
         ArrayList<Expression> expressions = getExpressions();
         boolean result = search(expressions, findAll);
-        // System.err.println(searchCount);
         return result;
     }
 
@@ -101,6 +100,17 @@ public class NumberCalculator {
         return expressions;
     }
 
+    private String getHashKey(ArrayList<Expression> expressions) {
+        if (expressions != null) {
+            StringBuilder sb = new StringBuilder();
+            for (Expression expression : expressions) {
+                sb.append(expression.getValue()).append(",");
+            }
+            return sb.toString();
+        }
+        return null;
+    }
+
     private boolean search(ArrayList<Expression> expressions, boolean findAll) {
         // if the combination of the numbers has been proved to fail, don't try it again!
         if (expressions == null || failedNumbers.get(getHashKey(expressions)) != null) {
@@ -135,7 +145,7 @@ public class NumberCalculator {
                     switch (operator) {
                         case PLUS:
                             // we always put the larger number on the left for
-                            // plus, minus, and multiply
+                            // plus and multiply
                             result = new Expression(operand2, Operator.PLUS, operand1);
                             addToOrderedExpressionList(result, expressions);
                             if (search(expressions, findAll)) {
@@ -149,9 +159,20 @@ public class NumberCalculator {
                             expressions.remove(result);
                             break;
                         case MINUS:
-                            // we always put the larger number on the left for
-                            // plus, minus, and multiply
+                            // try both cases for minus
                             result = new Expression(operand2, Operator.MINUS, operand1);
+                            addToOrderedExpressionList(result, expressions);
+                            if (search(expressions, findAll)) {
+                                found = true;
+                                if (!findAll) {
+                                    return found;
+                                }
+                            } else {
+                                failedNumbers.put(getHashKey(expressions), true);
+                            }
+                            expressions.remove(result);
+
+                            result = new Expression(operand1, Operator.MINUS, operand2);
                             addToOrderedExpressionList(result, expressions);
                             if (search(expressions, findAll)) {
                                 found = true;
@@ -165,7 +186,7 @@ public class NumberCalculator {
                             break;
                         case MULTIPLY:
                             // we always put the larger number on the left for
-                            // plus, minus, and multiply
+                            // plus and multiply
                             result = new Expression(operand2, Operator.MULTIPLY, operand1);
                             addToOrderedExpressionList(result, expressions);
                             if (search(expressions, findAll)) {
@@ -218,17 +239,6 @@ public class NumberCalculator {
             }
         }
         return found;
-    }
-
-    private String getHashKey(ArrayList<Expression> expressions) {
-        if (expressions != null) {
-            StringBuilder sb = new StringBuilder();
-            for (Expression expression : expressions) {
-                sb.append(expression.getValue().toString()).append(",");
-            }
-            return sb.toString();
-        }
-        return null;
     }
 
 }
