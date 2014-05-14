@@ -10,10 +10,10 @@ import oyyq.numbercalculator.util.ExpressionSimplifier;
 
 public class NumberCalculator {
 
-    HashMap<String, Boolean>      failedNumbers;
-    private Number[]              numbers;
-    private ArrayList<Expression> results;
-    private Number                target;
+    private HashMap<String, Boolean> failedNumbers;
+    private Number[]                 numbers;
+    private ArrayList<Expression>    results;
+    private Number                   target;
 
     public NumberCalculator(Number[] numbers) {
         this(numbers, 24);

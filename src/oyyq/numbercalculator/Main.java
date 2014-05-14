@@ -43,7 +43,7 @@ public class Main {
         // System.out.println(max);
         // System.exit(0);
         NumberCalculator calculator = new NumberCalculator(
-                new Number[] {-1, -2, -3, -4}, 24);
+                new Number[] {5, 7, 7, 13, 13}, 24);
         Number[] numbers = calculator.getNumbers();
         for (Number number : numbers) {
             System.out.print(number + " ");
