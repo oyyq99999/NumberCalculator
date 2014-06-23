@@ -50,6 +50,12 @@ public class ExpressionSimplifier {
                 result = simplified;
             }
 
+            simplified = simplifyMinusNegative(result);
+            if (!simplified.toString(true).equals(result.toString(true))) {
+                hasSimplified = true;
+                result = simplified;
+            }
+
         } while (hasSimplified);
         return result;
     }
@@ -257,6 +263,34 @@ public class ExpressionSimplifier {
         return newExpression;
     }
 
+    private static Expression simplifyMinusNegative(Expression oldExpression) {
+        Expression newExpression = oldExpression;
+        if (oldExpression.isSimple()) {
+            return oldExpression;
+        }
+        Expression operand1 = oldExpression.getOperand1();
+        Expression operand2 = oldExpression.getOperand2();
+        Operator oper = oldExpression.getOperator();
+
+        // a - (b - c) */ d => a + (c - b) */ d while c > b
+        // a - b */ (c - d) => a + b */ (d - c) while d > c
+        if (oper == Operator.MINUS && operand2.getValue().compareTo(0) < 0) {
+            Expression newOperand2 = tryToNegateExpression(operand2);
+            if (!newOperand2.equals(operand2)) {
+                newExpression = new Expression(operand1, Operator.PLUS, newOperand2);
+            }
+        }
+        operand1 = newExpression.getOperand1();
+        operand2 = newExpression.getOperand2();
+        oper = newExpression.getOperator();
+        if (!operand1.isSimple() || !operand2.isSimple()) {
+            operand1 = simplifyMinusNegative(operand1);
+            operand2 = simplifyMinusNegative(operand2);
+            newExpression = new Expression(operand1, oper, operand2);
+        }
+        return newExpression;
+    }
+
     private static Expression simplifyMinusOrDivide(Expression oldExpression) {
         Expression newExpression = oldExpression;
         if (oldExpression.isSimple()) {
@@ -345,6 +379,38 @@ public class ExpressionSimplifier {
             newExpression = new Expression(operand1, oper, operand2);
         }
 
+        return newExpression;
+    }
+
+    private static Expression tryToNegateExpression(Expression oldExpression) {
+        Expression newExpression = oldExpression;
+        if (oldExpression == null || oldExpression.isSimple()) {
+            return oldExpression;
+        }
+        Expression operand1 = oldExpression.getOperand1();
+        Expression operand2 = oldExpression.getOperand2();
+        Operator oper = oldExpression.getOperator();
+        switch (oper) {
+            case MINUS:
+                newExpression = new Expression(operand2, oper, operand1);
+                break;
+            case MULTIPLY:
+            case DIVIDE:
+                Expression newOperand1 = tryToNegateExpression(operand1);
+                if (newOperand1 != operand1) {
+                    newExpression = new Expression(newOperand1, oper, operand2);
+                    break;
+                }
+                Expression newOperand2 = tryToNegateExpression(operand2);
+                if (newOperand2 != operand2) {
+                    newExpression = new Expression(operand1, oper, newOperand2);
+                    break;
+                }
+                break;
+            case PLUS:
+            default:
+                break;
+        }
         return newExpression;
     }
 }
