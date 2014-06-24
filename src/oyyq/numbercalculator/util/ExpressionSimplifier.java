@@ -93,7 +93,7 @@ public class ExpressionSimplifier {
      * </p>
      * <b>rules:</b>
      * <ol>
-     * <li>The one which has <b>more operators</b> in total should on the left, when equals,</li>
+     * <li>The one which has <b>more operands</b> in total should on the left, when equals,</li>
      * <li>The one which has a <b>larger value</b> should on the left, when equals again,</li>
      * <li>Compare the string form of the two expressions, the 'larger' one on the left.
      * </ol>
@@ -105,7 +105,7 @@ public class ExpressionSimplifier {
      * @return true if a should before b, false otherwise.
      */
     private static boolean aShouldBeforeB(Expression a, Expression b) {
-        int compare = a.getTotalOperatorCount() - b.getTotalOperatorCount();
+        int compare = a.getTotalOperandsCount() - b.getTotalOperandsCount();
         if (compare > 0) {
             return true;
         } else if (compare == 0) {

@@ -8,7 +8,7 @@ public class Expression {
     private Expression  operand2;
     private Operator    operator;
     private boolean     simple;
-    private int         totalOperatorCount;
+    private int         totalOperandsCount;
     private BigFraction value;
 
     private static BigFraction calcValue(Expression op1, Operator operator, Expression op2) {
@@ -44,7 +44,7 @@ public class Expression {
         this.operator = operator;
         value = calcValue(operand1, operator, operand2);
         simple = false;
-        totalOperatorCount = operand1.totalOperatorCount + operand2.totalOperatorCount;
+        totalOperandsCount = operand1.totalOperandsCount + operand2.totalOperandsCount;
     }
 
     public Expression(Number value) {
@@ -52,7 +52,7 @@ public class Expression {
         operand1 = operand2 = null;
         operator = null;
         simple = true;
-        totalOperatorCount = 1;
+        totalOperandsCount = 1;
     }
 
     public Expression(Number operand1, Operator operator, Number operand2) {
@@ -71,8 +71,8 @@ public class Expression {
         return operator;
     }
 
-    public int getTotalOperatorCount() {
-        return totalOperatorCount;
+    public int getTotalOperandsCount() {
+        return totalOperandsCount;
     }
 
     public BigFraction getValue() {
