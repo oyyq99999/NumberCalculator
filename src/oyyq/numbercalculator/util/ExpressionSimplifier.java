@@ -56,6 +56,12 @@ public class ExpressionSimplifier {
                 result = simplified;
             }
 
+            simplified = simplifyNegativeMultiplyOrDivideNegative(result);
+            if (!simplified.toString(true).equals(result.toString(true))) {
+                hasSimplified = true;
+                result = simplified;
+            }
+
         } while (hasSimplified);
         return result;
     }
@@ -379,6 +385,37 @@ public class ExpressionSimplifier {
             newExpression = new Expression(operand1, oper, operand2);
         }
 
+        return newExpression;
+    }
+
+    private static Expression simplifyNegativeMultiplyOrDivideNegative(Expression oldExpression) {
+        Expression newExpression = oldExpression;
+        if (oldExpression.isSimple()) {
+            return oldExpression;
+        }
+        Expression operand1 = oldExpression.getOperand1();
+        Expression operand2 = oldExpression.getOperand2();
+        Operator oper = oldExpression.getOperator();
+
+        // (a - b) */ (c - d) => (b - a) */ (d - c) while b > a and d > c
+        if ((oper == Operator.MULTIPLY || oper == Operator.DIVIDE)
+                && operand1.getValue().compareTo(0) < 0 && operand2.getValue().compareTo(0) < 0) {
+            Expression newOperand1 = tryToNegateExpression(operand1);
+            if (newOperand1 != operand1) {
+                Expression newOperand2 = tryToNegateExpression(operand2);
+                if (newOperand2 != operand2) {
+                    newExpression = new Expression(newOperand1, oper, newOperand2);
+                }
+            }
+        }
+        operand1 = newExpression.getOperand1();
+        operand2 = newExpression.getOperand2();
+        oper = newExpression.getOperator();
+        if (!operand1.isSimple() || !operand2.isSimple()) {
+            operand1 = simplifyNegativeMultiplyOrDivideNegative(operand1);
+            operand2 = simplifyNegativeMultiplyOrDivideNegative(operand2);
+            newExpression = new Expression(operand1, oper, operand2);
+        }
         return newExpression;
     }
 
