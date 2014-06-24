@@ -88,9 +88,11 @@ public class Main {
                         }
                         for (Expression result : results) {
                             if (!map.hasThisSolution(numbers, result.toString().replaceAll(" ", ""))) {
-                                sb.append(result).append("\n");
+                                sb.append("MORE: ").append(result).append("\n");
                                 more = true;
                                 moreSolveCount++;
+                            } else {
+                                sb.append("SAME: ").append(result).append("\n");
                             }
                         }
                         if (more) {
