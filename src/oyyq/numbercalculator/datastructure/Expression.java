@@ -127,9 +127,9 @@ public class Expression {
             // guarantee the lower operators calculates first too, plus another
             // case: a - (b + c) or a / (b / c) but not a - b * c
             if (!operand2.simple
-                    && (fullParenthesis || ((operand2.operator.getPriority() < operator
+                    && (fullParenthesis || (operand2.operator.getPriority() < operator
                             .getPriority() || (!operator.isExchangable() && operator.getPriority() == operand2.operator
-                            .getPriority()))))) {
+                            .getPriority())))) {
                 sb.append(OPEN_PARENTHESIS).append(operand2.toString(fullParenthesis))
                         .append(CLOSE_PARENTHESIS);
             } else {
