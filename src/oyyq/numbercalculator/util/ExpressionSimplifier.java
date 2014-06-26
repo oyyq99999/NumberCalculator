@@ -26,12 +26,6 @@ public class ExpressionSimplifier {
                 result = simplified;
             }
 
-            simplified = putMinusAndDivideToRightmost(result);
-            if (!simplified.toString(true).equals(result.toString(true))) {
-                hasSimplified = true;
-                result = simplified;
-            }
-
             simplified = simplifyDivideAbsoluteOne(result);
             if (!simplified.toString(true).equals(result.toString(true))) {
                 hasSimplified = true;
@@ -45,6 +39,12 @@ public class ExpressionSimplifier {
             }
 
             simplified = simplifyMinusOrDivide(result);
+            if (!simplified.toString(true).equals(result.toString(true))) {
+                hasSimplified = true;
+                result = simplified;
+            }
+
+            simplified = putMinusAndDivideToRightmost(result);
             if (!simplified.toString(true).equals(result.toString(true))) {
                 hasSimplified = true;
                 result = simplified;
@@ -284,6 +284,15 @@ public class ExpressionSimplifier {
             Expression newOperand2 = tryToNegateExpression(operand2);
             if (!newOperand2.equals(operand2)) {
                 newExpression = new Expression(operand1, Operator.PLUS, newOperand2);
+            }
+        }
+        
+        // a */ (b - c) + d => d - a */ (c - b) while c > b
+        // (a - b) */ c + d => d - (b - a) */ c while b > a
+        if (oper == Operator.PLUS && operand1.getValue().compareTo(0) < 0) {
+            Expression newOperand1 = tryToNegateExpression(operand1);
+            if (!newOperand1.equals(operand1)) {
+                newExpression = new Expression(operand2, Operator.MINUS, newOperand1);
             }
         }
         operand1 = newExpression.getOperand1();
