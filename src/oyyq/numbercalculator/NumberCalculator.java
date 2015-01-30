@@ -1,8 +1,10 @@
 package oyyq.numbercalculator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 import oyyq.numbercalculator.datastructure.Expression;
 import oyyq.numbercalculator.datastructure.Operator;
@@ -12,7 +14,7 @@ public class NumberCalculator {
 
     private HashMap<String, Boolean> failedNumbers;
     private Number[]                 numbers;
-    private ArrayList<Expression>    results;
+    private LinkedList<Expression>    results;
     private Number                   target;
 
     public NumberCalculator(Number[] numbers) {
@@ -33,7 +35,7 @@ public class NumberCalculator {
         }
         this.target = target;
         this.numbers = numbers;
-        this.results = new ArrayList<>();
+        this.results = new LinkedList<Expression>();
     }
 
     public boolean calculate() {
@@ -43,7 +45,7 @@ public class NumberCalculator {
     public boolean calculate(boolean findAll) {
         failedNumbers = new HashMap<>();
         // the list is sorted
-        ArrayList<Expression> expressions = getExpressions();
+        List<Expression> expressions = getExpressions();
         boolean result = search(expressions, findAll);
         return result;
     }
@@ -57,8 +59,8 @@ public class NumberCalculator {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<Expression> getResults() {
-        return (ArrayList<Expression>) results.clone();
+    public List<Expression> getResults() {
+        return (List<Expression>) results.clone();
     }
 
     public Number getTarget() {
@@ -66,18 +68,18 @@ public class NumberCalculator {
     }
 
     // add result to the expressions list, ensuring the order
-    private void addToOrderedExpressionList(Expression result, ArrayList<Expression> expressions) {
-        int length = expressions.size();
-        for (int i = 0; i < length; i++) {
+    private void addToOrderedExpressionList(Expression result, List<Expression> expressions) {
+        ListIterator<Expression> iterator = expressions.listIterator();
+        while (iterator.hasNext()) {
             // find the one before which to insert
-            if (result.getValue().compareTo(expressions.get(i).getValue()) <= 0) {
-                expressions.add(i, result);
-                break;
+            if (result.getValue().compareTo(iterator.next().getValue()) <= 0) {
+                iterator.previous();
+                iterator.add(result);
+                return;
             }
         }
-        if (expressions.size() == length) {
-            expressions.add(result);
-        }
+        // not inserted yet, should be last
+        expressions.add(result);
     }
 
     private void addToResults(Expression result) {
@@ -90,17 +92,17 @@ public class NumberCalculator {
         results.add(result);
     }
 
-    private ArrayList<Expression> getExpressions() {
+    private List<Expression> getExpressions() {
         Number[] numbers = this.numbers.clone();
         Arrays.sort(numbers);
-        ArrayList<Expression> expressions = new ArrayList<>();
+        LinkedList<Expression> expressions = new LinkedList<Expression>();
         for (Number number : numbers) {
             expressions.add(new Expression(number));
         }
         return expressions;
     }
 
-    private String getHashKey(ArrayList<Expression> expressions) {
+    private String getHashKey(List<Expression> expressions) {
         if (expressions != null) {
             StringBuilder sb = new StringBuilder();
             for (Expression expression : expressions) {
@@ -111,7 +113,7 @@ public class NumberCalculator {
         return null;
     }
 
-    private boolean search(ArrayList<Expression> expressions, boolean findAll) {
+    private boolean search(List<Expression> expressions, boolean findAll) {
         // if the combination of the numbers has been proved to fail, don't try it again!
         if (expressions == null || failedNumbers.get(getHashKey(expressions)) != null) {
             return false;

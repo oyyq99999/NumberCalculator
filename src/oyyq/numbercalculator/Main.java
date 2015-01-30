@@ -1,7 +1,6 @@
 package oyyq.numbercalculator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import oyyq.numbercalculator.datastructure.Expression;
 
@@ -52,7 +51,7 @@ public class Main {
         long start = System.currentTimeMillis();
         System.out.println(calculator.calculate(true));
         System.err.println(System.currentTimeMillis() - start);
-        ArrayList<Expression> results;
+        List<Expression> results;
         results = calculator.getResults();
         System.out.println(results.size());
         for (Expression result : results) {

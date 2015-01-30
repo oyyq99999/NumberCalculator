@@ -1,6 +1,8 @@
 package oyyq.numbercalculator.util;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 import oyyq.numbercalculator.datastructure.Expression;
 import oyyq.numbercalculator.datastructure.Operator;
@@ -75,12 +77,13 @@ public class ExpressionSimplifier {
      *            The list
      */
     private static void addToOrderedExpressionList(Expression result,
-            ArrayList<Expression> expressions) {
-        int length = expressions.size();
-        for (int i = 0; i < length; i++) {
-            Expression expi = expressions.get(i);
+            List<Expression> expressions) {
+        ListIterator<Expression> iterator = expressions.listIterator();
+        while (iterator.hasNext()) {
+            Expression expi = iterator.next();
             if (aShouldBeforeB(result, expi)) {
-                expressions.add(i, result);
+                iterator.previous();
+                iterator.add(result);
                 return;
             }
         }
@@ -168,7 +171,7 @@ public class ExpressionSimplifier {
         Expression operand1 = oldExpression.getOperand1();
         Expression operand2 = oldExpression.getOperand2();
         if (!oper.isExchangable()) {
-            ArrayList<Expression> operand2s = new ArrayList<>();
+            LinkedList<Expression> operand2s = new LinkedList<Expression>();
             addToOrderedExpressionList(operand2, operand2s);
             while (operand1.getOperator() == oper) {
                 addToOrderedExpressionList(operand1.getOperand2(), operand2s);
@@ -203,20 +206,20 @@ public class ExpressionSimplifier {
         Expression operand1 = oldExpression.getOperand1();
         Expression operand2 = oldExpression.getOperand2();
         if (oper.isExchangable()) {
-            ArrayList<Expression> operands = new ArrayList<>();
+            LinkedList<Expression> operands = new LinkedList<Expression>();
             addToOrderedExpressionList(operand1, operands);
             addToOrderedExpressionList(operand2, operands);
             int size = Integer.MAX_VALUE;
             do {
                 size = operands.size();
-                for (int i = 0; i < size; i++) {
-                    Expression operandi = operands.get(i);
-
-                    // should expand
+                ListIterator<Expression> iterator = operands.listIterator();
+                while (iterator.hasNext()) {
+                    Expression operandi = iterator.next();
+                    
                     if (operandi.getOperator() == oper) {
                         Expression operandi1 = operandi.getOperand1();
                         Expression operandi2 = operandi.getOperand2();
-                        operands.remove(operandi);
+                        iterator.remove();
                         addToOrderedExpressionList(operandi1, operands);
                         addToOrderedExpressionList(operandi2, operands);
                         break;
@@ -227,8 +230,8 @@ public class ExpressionSimplifier {
             while (operands.size() > 1) {
                 operand1 = operands.get(0);
                 operand2 = operands.get(1);
-                operands.remove(operand1);
-                operands.remove(operand2);
+                operands.remove(0);
+                operands.remove(0);
                 Expression result = new Expression(operand1, oper, operand2);
                 addToOrderedExpressionList(result, operands);
             }
